@@ -15,7 +15,7 @@ ARCHITECTURE arch_mealy of recog2 is
   SIGNAL cnt0, nextCnt0: INTEGER RANGE 0 TO 14:=0; --Counter for 0
   SIGNAL cnt1, nextCnt1: INTEGER RANGE 0 TO 16:=0; --Counter for 1
 BEGIN 
-  combi_nextState: process(curState, x, cnt0, cnt1) 
+  combi_nextState: PROCESS(curState, x, cnt0, cnt1) 
   BEGIN 
     nextState <= curState;
     nextCnt0 <= cnt0;
@@ -60,7 +60,17 @@ BEGIN
     END CASE;
   END PROCESS;
 
+seq_state: PROCESS(clk, reset)
+BEGIN 
+  IF reset = '1' THEN
+    curState = INIT;
+    cnt0 <= 0;
+  ELSE
+    curState = INIT;
+
   combi_out: PROCESS(curState, x)
   BEGIN
     y <= '0'; -- Assign default value 0 
     IF curState = THIRD AND x = 1
+      
+      
