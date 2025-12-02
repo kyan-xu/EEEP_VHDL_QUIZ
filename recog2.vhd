@@ -9,7 +9,7 @@ PORT(
   y: OUT bit); 
 END recog2; 
 
-ARCHITECTURE arch_mealy OF recog2 IS
+ARCHITECTURE myArch OF recog2 IS
   TYPE state_type is (INIT, FIRST, SECOND); -- List states
   SIGNAL curState, nextState: STATE_TYPE; 
   SIGNAL cnt0, nextCnt0: INTEGER RANGE 0 TO 14:=0; --Counter for 0
@@ -20,18 +20,20 @@ BEGIN
     nextState <= curState;
     nextCnt0 <= cnt0;
     nextCnt1 <= cnt1;
-    y <= '0';
     CASE curState IS 
       WHEN INIT =>  -- State S0
         IF x = '1' THEN  -- When input is 1
           nextState <= INIT; 
+          y <= '0';
         ELSE 
           nextState <= FIRST;
-          nextCnt0 <= 0; -- set the nextCnt0 to 0
+          nextCnt0 <= 1; -- set the nextCnt0 to 0
+          y <= '0';
 	END IF;
       WHEN FIRST =>  --State S1
         IF x = '0' THEN  --When input is 0
           nextState <= FIRST; -- Stay in the first, but the 0 increased
+	  y <= '0';
           IF cnt0 < 14 THEN  -- When the counted 0 is less than 15
             nextCnt0 <= cnt0 + 1; -- Number of 0 + 1
           ELSE 
@@ -40,11 +42,13 @@ BEGIN
         ELSE 
           IF cnt0 = 14 THEN
             nextState <= SECOND; -- Transit to S2
-            nextCnt1 <= 0; -- Set the nextCnt1 to 0
+            nextCnt1 <= 1; -- Set the nextCnt1 to 1
+	    y <= '0';
           ELSE
             nextState <= INIT; -- Transit to S0
             nextCnt0 <= 0;
             nextCnt1 <= 0;
+	    y <= '0';
           END IF;
         End IF;
       WHEN SECOND => --State S2
@@ -52,10 +56,12 @@ BEGIN
           nextState <= FIRST; -- Back to S1
           nextCnt0  <= 0;
           nextCnt1  <= 0;
+	  y <= '0';
         ELSE 
           IF cnt1 < 16 THEN 
             nextCnt1 <= cnt1 + 1;
             nextState <= SECOND;
+	    y <= '0';
           ELSE
             y <= '1'; -- output is 1
             nextState <= INIT;
@@ -79,6 +85,4 @@ BEGIN
   END IF; 
 END PROCESS; -- End sequential processes
 
-END arch_mealy; -- End mealy FSM
-
-      
+END myArch; -- End mealy FSM
